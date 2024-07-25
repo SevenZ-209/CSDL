@@ -1,0 +1,35 @@
+SELECT * FROM Customers, Orders;	
+
+SELECT * FROM Customers, Orders where Customers.CustomerID= Orders.CustomerID;
+
+SELECT CustomerID, CompanyName, ContactName, Address, Country, City FROM Customers WHERE Country='France' or City='London' ORDER BY Country ASC;
+
+SELECT CustomerID, CompanyName, ContactName, Address, Country, City, ContactTitle FROM Customers WHERE (ContactTitle='Sales Manager' and Country='USA') or (ContactTitle='Owner' and Country='Mexico') ORDER BY Country DESC;
+
+SELECT CustomerID, CompanyName, ContactName, Address, Country, City, ContactTitle FROM Customers WHERE (ContactTitle='Manager' and Country='USA') or not (ContactTitle='Owner' and Country='Mexico') ORDER BY Country DESC;
+
+SELECT Orders.OrderID, Orders.OrderDate, Customers.ContactTitle, Customers.CompanyName, Employees.LastName FROM Orders, Customers , Employees WHERE OrderDate between'1997-1-1' and '1997-6-30';
+
+SELECT Orders.OrderID, Orders.OrderDate, Customers.ContactTitle, Customers.CompanyName, Employees.LastName FROM Orders, Customers , Employees WHERE Year(Orders.OrderDate) % 2=0;
+
+SELECT Orders.OrderID, Orders.OrderDate, Customers.ContactTitle, Customers.CompanyName, Employees.LastName FROM Orders, Customers , Employees WHERE DAY(Orders.OrderDate)=5 or DAY(Orders.OrderDate)=13 or DAY(Orders.OrderDate)=14 or DAY(Orders.OrderDate)=23;
+
+SELECT Orders.OrderID, Orders.OrderDate, Customers.CompanyName, Orders.Freight, Orders.ShipCountry, Orders.EmployeeID From Orders, Customers Where (ShipCountry='UK') and (Orders.EmployeeID=2) and (YEAR(Orders.OrderDate) =1997);
+
+SELECT Products.ProductID, Products.ProductName, Categories.CategoryName, Suppliers.CompanyName FROM Products, Categories, Suppliers Where Products.ProductName Like 'Ch%';
+
+SELECT Products.ProductID, Products.ProductName, Categories.CategoryName, Suppliers.CompanyName FROM Products, Categories, Suppliers Where Discontinued ='1';
+
+Select Customers.CompanyName, Customers.ContactName, Customers.Country, Customers.Phone, Customers.Fax from Customers Where NOT Customers.Country='USA';
+
+Select Customers.CompanyName, Customers.ContactName, Customers.Country, Customers.Phone, Customers.Fax from Customers 
+Where NOT ((Customers.Country='Brazil') or (Customers.Country='Italy') or (Customers.Country='Spain') or (Customers.Country='Venezuela') or (Customers.Country='UK')) ORDER BY Country ASC;
+
+Select Orders.OrderID, Customers.CompanyName, Employees.LastName, Orders.ShipCountry, Orders.ShippedDate, Orders.Freight  FROM Orders, Customers, Employees 
+Where (ShipCountry='USA') and (Freight> '300') Order By Freight ASC;
+
+Select Orders.OrderDate, Customers.CompanyName, Employees.LastName, Orders.OrderDate, Orders.RequiredDate, Orders.ShipCountry, Orders. Freight From Orders, Customers, Employees 
+Where DAY(Orders.OrderDate)=DAY(GETDATE()) or DAY(Orders.RequiredDate)=DAY(GETDATE());
+
+
+
