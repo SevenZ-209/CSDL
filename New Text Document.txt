@@ -32,4 +32,58 @@ Select Orders.OrderDate, Customers.CompanyName, Employees.LastName, Orders.Order
 Where DAY(Orders.OrderDate)=DAY(GETDATE()) or DAY(Orders.RequiredDate)=DAY(GETDATE());
 
 
+USE [Northwind]
+GO
+
+/****** Object:  Table [dbo].[Categories]    Script Date: 08/08/2024 7:42:51 AM ******/
+
+--25
+select COUNT(o.ShipCountry) as tongdonhang
+from Orders o
+where (o.ShipCountry = 'UK') or (o.ShipCountry = 'Belgium') or (o.ShipCountry = 'Canada')
+
+--26
+select  o.ShipCountry , COUNT(o.ShipCountry) as tongdonhang
+from Orders o
+where (o.ShipCountry = 'UK') or (o.ShipCountry = 'Belgium') or (o.ShipCountry = 'Canada')
+group by o.ShipCountry
+
+--27
+select *
+from Products p
+where p.UnitPrice > 30
+order by p.UnitPrice asc
+
+--28
+select p.CategoryID, AVG(p.UnitPrice) as trungbinh
+from Products p
+group by p.CategoryID
+having AVG(p.UnitPrice) > 30
+
+--29
+select c.CategoryName , SUM(p.UnitPrice*od.Quantity*( 1 - od.Discount)) as DoanhSo
+from Products p
+inner join Categories c on p.CategoryID= c.CategoryID
+inner join [Order Details] od on p.ProductID=od.ProductID
+inner join Orders o on o.OrderID = od.OrderID
+where YEAR(o.OrderDate)=1996
+group by c.CategoryName
+
+--30
+select c.CompanyName, SUM(od.UnitPrice* od.Quantity*(1-od.Discount)) as TongTienHang , SUM(o.Freight)/sum(od.UnitPrice* od.UnitPrice*(1-od.Discount)) as Tilecuoc
+from Customers c
+inner join Orders o on o.CustomerID = c.CustomerID
+inner join [Order Details] od on od.OrderID = o.OrderID
+group by c.CompanyName
+
+--31
+select top 39  p.ProductName, p.ProductID, p.UnitPrice
+from Products p
+order by UnitPrice desc
+
+--32
+select top 50 percent  p.ProductName, p.ProductID, p.UnitPrice
+from Products p
+order by UnitPrice desc
+
 
