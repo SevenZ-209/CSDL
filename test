@@ -120,8 +120,114 @@ select
 	AVG(p.UnitPrice) as DonGiaTrungBinh
 from Products p
 Group by p.CategoryID;
---25
+--25 Đếm tổng số đơn đặt hàng của các Orders có Ship Country 
+--là Belgium, Canada, UK (1 giá trị thống kê)
+SELECT 
+    COUNT(*) AS TongSoDonDatHang
+FROM Orders
+WHERE ShipCountry IN ('Belgium', 'Canada', 'UK')
+-- hoặc
 SELECT 
     COUNT(*) AS TongSoDonDatHang
 FROM Orders
 WHERE ShipCountry = 'Belgium' OR ShipCountry = 'Canada' OR ShipCountry = 'UK'
+--26 Đếm số đơn hàng đặt của các Orders 
+--có Ship Country là Belgium, Canada, UK (3 giá trị thống kê)
+SELECT 
+	ShipCountry,
+    COUNT(*) AS TongSoDonDatHang
+FROM Orders o
+WHERE ShipCountry = 'Belgium' OR ShipCountry = 'Canada' OR ShipCountry = 'UK'
+group by ShipCountry;
+--hoac
+SELECT 
+    ShipCountry,
+    COUNT(*) AS SoDonHangDat
+FROM Orders
+WHERE ShipCountry IN ('Belgium', 'Canada', 'UK')
+GROUP BY ShipCountry;
+--27 Lập danh sách các loại sản phẩm có đơn giá trung bình lớn hơn 30
+Select 
+	p.ProductName,
+	AVG(UnitPrice) as DonGiaTrungBinh
+from Products p
+Group by p.ProductName
+Having AVG(p.UnitPrice) > 30;
+--28  Tính đơn giá trung bình của mỗi loại sản phẩm, 
+--chỉ thống kê trên các sản phẩm có đơn gia lớn hơn 30
+Select 
+	p.ProductName,
+	AVG(UnitPrice) as DonGiaTrungBinh
+from Products p
+Group by p.ProductName
+Having AVG(p.UnitPrice) > 30;
+--29 Tính doanh số của từng loại sản phẩm (Category) trong năm 1996. 
+--Danh sách gồm 2 cột: CategoryName, DoanhSo; trong đó DoanhSo là tổng tất cả tiền phải trả với 
+--TienPhaiTra = UnitPrice* Quantity * (1-Discount)
+select  c.CategoryName,
+SUM(p.UnitPrice * od.Quantity * (1-od.Discount)) as DoanhSo
+
+from Categories c
+inner join Products p on c.CategoryID = p.ProductID
+inner join [Order Details] od on p.ProductID = od.ProductID
+inner join Orders o on o.OrderID= od.OrderID
+where YEAR(o.OrderDate)=1996
+GROUP BY c.CategoryName;
+
+--30 Thiết kế query tính tỉ lệ % tiền cước so với tiền mua hàng của từng công ty khách hàng trong năm 1997. 
+--Danh sách gồm các cột: 
+--CompanyName của Customers, TongTienCuoc(Freight), 
+--TongTienHang với TienHang = UnitPrice * Quantity * ( 1- Discount), TiLeCuoc = TongTienCuoc/TongTienHang
+select 
+	c.CompanyName,
+	SUM(o.Freight) as TongTienCuoc,
+	
+	SUM(od.UnitPrice*od.Quantity*(1-od.Discount)) as TongTienHang,
+	SUM(o.Freight)/SUM(od.UnitPrice*od.Quantity*(1-od.Discount)) *100 as TiLeCuoc
+
+from Customers c
+inner join Orders o on o.CustomerID = c.CustomerID
+inner join [Order Details] od on od.OrderID=o.OrderID
+where YEAR(o.OrderDate)=1997
+group by c.CompanyName;
+--31 Lập danh sách lấy 39 sản phẩm có đơn giá niêm yết cao nhất. 
+--Danh sách gồm các cột : ProductID, ProductName, UnitPrice
+SELECT TOP 39
+    ProductID,
+    ProductName,
+    UnitPrice
+FROM Products
+ORDER BY UnitPrice DESC;
+--32 Lập danh sách lấy 50% số sản phẩm có đơn giá niêm yết cao nhất. 
+--Danh sách gồm các cột : ProductID, ProductName, UnitPrice
+SELECT TOP 50 PERCENT
+    ProductID,
+    ProductName,
+    UnitPrice
+FROM Products
+ORDER BY UnitPrice DESC
+--33 Lập danh sách lấy 10 khách hàng mua nhiều đơn hàng nhất.
+--DS gồm các cột : CustomerID, CompanyName, SoLuongDonHang
+select top 10
+c.CustomerID,
+c.CompanyName,
+COUNT(o.OrderID) as SoLuongDonHang
+from Customers c
+inner join Orders o on o.CustomerID=c.CustomerID
+group by c.CustomerID, c.CompanyName
+order by COUNT(o.OrderID) desc;
+--34 Lập danh sách lấy các khách hàng đã từng mua ít nhất 1 đơn hàng. 
+--Danh sách gồm tất cả các cột bảng Customers
+SELECT *
+FROM Customers
+WHERE CustomerID IN (
+    SELECT DISTINCT CustomerID
+    FROM Orders
+)
+--35 Chưa từng mua hàng
+SELECT *
+FROM Customers
+WHERE CustomerID not IN (
+    SELECT DISTINCT CustomerID
+    FROM Orders
+)
