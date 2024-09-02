@@ -1,0 +1,127 @@
+--1
+SELECT *FROM Customers, Orders;
+--2
+SELECT Customers.CustomerID, Orders.OrderID FROM Customers INNER JOIN Orders ON Customers.CustomerID = Orders.CustomerID;
+--3
+Select c.CustomerID, c.CompanyName, c.ContactName, c.Address, c.Country, c.City FROM Customers c Where c.City='London' or c.Country='France' ORDER BY c.Country asc;
+--4
+select * from Customers c where (c.ContactTitle='Owner' and c.Country='Mexico') or (c.ContactTitle='Sales Manager'and c.Country='USA') order by c.Country desc;
+--5
+select * from Customers c where not (c.ContactTitle='Owner' and c.Country='Mexico') or (c.ContactTitle='Manager'and c.Country='USA') order by c.Country desc;
+--6
+select o.OrderID, o.OrderDate, c.CompanyName, e.LastName from Orders o
+Inner join Customers c on c.CustomerID= o.CustomerID
+Inner join Employees e on e.EmployeeID = o.EmployeeID
+where o.OrderDate between '1997-01-01' and '1997-06-30';
+--7
+Select o.OrderID, o.OrderDate, c.CompanyName, e.LastName from Orders o 
+inner join Customers c on C.CustomerID= o.CustomerID 
+inner join Employees e on o.EmployeeID= e.EmployeeID
+where ( YEAR(o.OrderDate)=1997 and MONTH(o.OrderDate)=2)
+--8
+Select o.OrderID, o.OrderDate, c.CompanyName, e.LastName from Orders o 
+inner join Customers c on C.CustomerID= o.CustomerID 
+inner join Employees e on o.EmployeeID= e.EmployeeID
+where ( YEAR(o.OrderDate)=1997 and MONTH(o.OrderDate)=4)
+--9
+select  o.OrderID, o.OrderDate, c.CompanyName, e.LastName from Orders o
+inner join Customers c on c.CustomerID = o.CustomerID
+inner join Employees e on e.EmployeeID= o.EmployeeID
+where (YEAR(o.OrderDate) % 2 = 0)
+--10
+select  o.OrderID, o.OrderDate, c.CompanyName, e.LastName from Orders o
+inner join Customers c on c.CustomerID = o.CustomerID
+inner join Employees e on e.EmployeeID= o.EmployeeID
+where (DAY(o.OrderDate) = 5) or (DAY(o.OrderDate) = 13) or  (DAY(o.OrderDate) = 14) or (DAY(o.OrderDate) = 23);
+--11
+select o.OrderDate, o.OrderID, c.CompanyName, o.Freight 
+from Orders o
+inner join Employees e on e.EmployeeID = o.EmployeeID
+inner join Customers c on c.CustomerID = o.CustomerID
+where (e.EmployeeID='2' and o.ShipCountry='UK' and YEAR(o.OrderDate)=1997);
+--12
+select p.ProductID, p.ProductName, s.CompanyName, c.CategoryName
+from Products p
+inner join Suppliers s on s.SupplierID=p.SupplierID
+inner join Categories c on p.CategoryID= c.CategoryID
+where p.ProductName like 'Ch%';
+--13
+select p.ProductID, s.CompanyName, p.UnitPrice, p.UnitsInStock, p.Discontinued
+from Products p
+inner join Suppliers s on s.SupplierID=p.SupplierID
+where (p.Discontinued='1' and p.UnitsInStock >0)
+--14
+select c.CompanyName, c.ContactName, c.Country, c.Phone, c.Fax
+from Customers c
+where not c.Country='USA'
+order by c.Country asc;
+--15
+select c.CompanyName, c.ContactName, c.Country, c.Phone, c.Fax
+from Customers c
+where not (c.Country='UK' or c.Country='Brazil' or c.Country='Italy' or c.Country='Spain' or c.Country='Venezuela')
+order by c.Country asc;
+--16
+select o.OrderID, c.CompanyName, e.LastName, o.OrderDate, o.ShipCountry, o.ShippedDate, o.Freight
+from Orders o
+inner join Customers c on c.CustomerID = o.CustomerID
+inner join Employees e on e.EmployeeID = o.EmployeeID
+where (o.ShipCountry='USA' and o.Freight > 300) or (o.ShipCountry='Argentina' and o.Freight <5)
+--17
+select o.OrderID, c.CompanyName, e.LastName, o.OrderDate, o.RequiredDate,o.ShipCountry, o.Freight
+from Orders o
+inner join Customers c on c.CustomerID= o.CustomerID
+inner join Employees e on e.EmployeeID= o.EmployeeID
+WHERE DAY(o.OrderDate) = DAY(GETDATE()) OR DAY(o.RequiredDate) = DAY(GETDATE())
+--18
+select o.OrderID , o.OrderDate, c.CompanyName, e.LastName, o.Freight, o.Freight * 1.1 as NewFreight
+from Orders o 
+inner join Customers c on c.CustomerID = o.CustomerID
+inner join Employees e on e.EmployeeID = o.EmployeeID
+where (Year(o.OrderDate)=1997 and MONTH(o.OrderDate)=4);
+--19
+select od.OrderID, p.ProductName, p.UnitPrice, od.Quantity,
+p.UnitPrice * Quantity as ThanhTien, (p.UnitPrice * Quantity) * od.Discount as TienGiamGia,
+(p.UnitPrice * Quantity) - (p.UnitPrice * Quantity) * od.Discount as TienPhaiTra
+from [Order Details] od
+inner join Products p on p.ProductID= od.ProductID
+inner join Orders o on o.OrderID=od.OrderID
+--20
+select od.OrderID, p.ProductName, p.UnitPrice, od.Quantity,
+p.UnitPrice * Quantity as ThanhTien, (p.UnitPrice * Quantity) * od.Discount as TienGiamGia,
+(p.UnitPrice * Quantity) - (p.UnitPrice * Quantity) * od.Discount as TienPhaiTra
+from [Order Details] od
+inner join Products p on p.ProductID= od.ProductID
+inner join Orders o on o.OrderID=od.OrderID
+where od.Discount > 0 and (p.UnitPrice * Quantity) - (p.UnitPrice * Quantity) * od.Discount < 50;
+--21
+select P.ProductName, p.ProductID, s.CompanyName, p.UnitPrice, p.UnitsInStock , p.UnitPrice*p.UnitsInStock as TriGia
+from Products p
+inner join Suppliers s on s.SupplierID=p.SupplierID
+--22 Hoten ghep tu TitleOfCourstesy, chữ đầu LastName và Firstname
+select CONCAT(e.TitleOfCourtesy, ' ' , e.LastName, ' ', e.FirstName) as HoTen, 
+e.HireDate, e.Title, e.BirthDate, e.HomePhone
+from Employees e
+where
+YEAR(HireDate) <= 1993
+--23 Từ bảng Products, đếm số sản phẩm, tính đơn giá cao nhất, 
+--đơn giá thấp nhất và đơn giá trung bình của tất cả sản phẩm
+select 
+	COUNT(*) AS SoSanPham,
+	Max(p.UnitPrice) as DonGiaCaoNhat,
+	Min(p.UnitPrice) as DonGiaThapnhat,
+	AVG(p.UnitPrice) as DonGiaTrungBinh
+From Products p;
+--24 Tính như trên nhưng thống kê theo nhóm theo loại sản phẩm (Group theo cột CategoryID)
+select 
+	p.CategoryID,
+	COUNT(*) As SoSanPham,
+	Max(p.UnitPrice) as DonGiaCaoNhat,
+	Min(p.UnitPrice) as DonGiaThapNhat,
+	AVG(p.UnitPrice) as DonGiaTrungBinh
+from Products p
+Group by p.CategoryID;
+--25
+SELECT 
+    COUNT(*) AS TongSoDonDatHang
+FROM Orders
+WHERE ShipCountry = 'Belgium' OR ShipCountry = 'Canada' OR ShipCountry = 'UK'
